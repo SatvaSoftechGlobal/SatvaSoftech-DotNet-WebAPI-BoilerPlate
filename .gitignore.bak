@@ -1,0 +1,23 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/.git
+
+/KalmTrainingWebApi/.vs
+/KalmTrainingWebApi/bin
+/KalmTrainingWebApi/obj
+/KalmTrainingWebApi/ReqResLog
+
+/KalmTraining.Services/bin
+/KalmTraining.Services/obj
+
+/KalmTraining.Model/bin
+/KalmTraining.Model/obj
+
+/KalmTraining.Data/bin
+/KalmTraining.Data/obj
+
+/KalmTraining.Common/bin
+/KalmTraining.Common/obj

@@ -1,0 +1,23 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/.git
+
+/SatvaSoftechBoilerplateWebApi/.vs
+/SatvaSoftechBoilerplateWebApi/bin
+/SatvaSoftechBoilerplateWebApi/obj
+/SatvaSoftechBoilerplateWebApi/ReqResLog
+
+/SatvaSoftechBoilerplate.Services/bin
+/SatvaSoftechBoilerplate.Services/obj
+
+/SatvaSoftechBoilerplate.Model/bin
+/SatvaSoftechBoilerplate.Model/obj
+
+/SatvaSoftechBoilerplate.Data/bin
+/SatvaSoftechBoilerplate.Data/obj
+
+/SatvaSoftechBoilerplate.Common/bin
+/SatvaSoftechBoilerplate.Common/obj
