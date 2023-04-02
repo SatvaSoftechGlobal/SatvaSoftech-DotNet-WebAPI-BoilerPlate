@@ -33,7 +33,7 @@ namespace SatvaSoftechBoilerplate.Data.DBRepository.Account
             }
             catch (Exception ex)
             {
-                throw;
+                throw; // :) Good Stuff!
             }
         } 
         #endregion

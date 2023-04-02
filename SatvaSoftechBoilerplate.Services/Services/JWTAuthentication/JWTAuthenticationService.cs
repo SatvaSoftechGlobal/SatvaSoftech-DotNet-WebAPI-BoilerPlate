@@ -71,6 +71,8 @@ namespace SatvaSoftechBoilerplate.Services.JWTAuthentication
                 userTokenData = JsonConvert.DeserializeObject<UserTokenModel>(claimData);
                 userTokenData.TokenValidTo = securityToken.ValidTo;
             }
+
+            //what if the above if does not satisfy. user token will be null, but are we logging this?
             return userTokenData;
         }
     }

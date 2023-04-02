@@ -11,7 +11,7 @@ namespace SatvaSoftechBoilerplate.Common.Converter
     public class CustomConverter
     {         
         public static string ConvertDatatableToXML(System.Data.DataTable dt)
-        {
+        { //Again, dt is not checked if null, can be also checked while invoking method, but i think better to do here
             MemoryStream str = new MemoryStream();
             dt.WriteXml(str, true);
             str.Seek(0, SeekOrigin.Begin);

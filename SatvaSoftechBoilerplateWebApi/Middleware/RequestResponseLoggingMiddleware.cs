@@ -66,7 +66,7 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
         }
 
         /// <summary>
-        /// Delete files from error logs folder which is older than 7 days.
+        /// Delete files from error logs folder which is older than 7 days.//Very good stuff!
         /// </summary>
         public void DeleteOldReqResLogFiles() {
             var directoryPath = Path.Combine(_hostingEnvironment.ContentRootPath, "ReqResLog");

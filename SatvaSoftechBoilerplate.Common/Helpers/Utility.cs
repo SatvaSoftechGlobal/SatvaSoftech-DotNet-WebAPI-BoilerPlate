@@ -15,7 +15,7 @@ namespace SatvaSoftechBoilerplate.Common.Helpers
         /// </summary>
         /// <param name="emailaddress"></param>
         /// <returns></returns>
-        public static bool IsValidEmail(string emailaddress)
+        public static bool IsValidEmail(string emailaddress) //Again not logging exceptions
         {
             try
             {

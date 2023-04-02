@@ -27,7 +27,7 @@ namespace SatvaSoftechBoilerplate.Common.EmailNotification
         {
             if (string.IsNullOrEmpty(recipient))
             {
-                return true;
+                return true; //Should we not add some message/Log to return so that it is easier to debug?
             }
 
             // Instantiate a new instance of MailMessage 
@@ -38,7 +38,7 @@ namespace SatvaSoftechBoilerplate.Common.EmailNotification
 
             // Set the recipient address of the mail message 
             // mailMessage.To.Add(new MailAddress(recipient));
-            if (!string.IsNullOrEmpty(recipient))
+            if (!string.IsNullOrEmpty(recipient))// Looks redundant,<30>
             {
                 string[] strRecipient = recipient.Replace(";", ",").TrimEnd(',').Split(new char[] { ',' });
 
@@ -76,10 +76,10 @@ namespace SatvaSoftechBoilerplate.Common.EmailNotification
             }
 
             // Set the subject of the mail message 
-            mailMessage.Subject = subject;
+            mailMessage.Subject = subject; //Subject is not checked if it is null
 
             // Set the body of the mail message 
-            mailMessage.Body = body;
+            mailMessage.Body = body;//Body is not checked if it is null
 
             // Set the format of the mail message body as HTML 
             mailMessage.IsBodyHtml = true;
@@ -107,7 +107,7 @@ namespace SatvaSoftechBoilerplate.Common.EmailNotification
             }
             catch (Exception ex)
             {
-                return false;
+                return false;// Again we should be LOGGING exceptions
             }
             finally
             {
