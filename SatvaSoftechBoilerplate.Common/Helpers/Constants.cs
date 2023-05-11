@@ -9,6 +9,9 @@ namespace SatvaSoftechBoilerplate.Common.Helpers
     public class Constants
     {
         public const string encryptionAlgorythm = "MD5";
-        public const string logoUrl = "http://www.cordobarewards.co.uk/wp-content/uploads/2016/02/Cordoba-Logo.png";
+        public const string RequestModel = "requestModel";
+        public const string RequestParams = "Request Params: ";
+        public const string QueryStringParams = "Query String Params: ";
+        public const string RequestMessage = "Message: ";
     }
 }

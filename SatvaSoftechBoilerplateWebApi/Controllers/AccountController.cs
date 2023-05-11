@@ -46,51 +46,41 @@ namespace SatvaSoftechBoilerplateWebApi.Controllers
             ApiPostResponse<LoginBaseReponseModel> response = new ApiPostResponse<LoginBaseReponseModel>();
             LoginBaseReponseModel loginBaseReponseModel = new LoginBaseReponseModel();
 
-            try
-            {                
-                model.Password = EncryptionDecryption.GetEncrypt(model.Password);
-                LoginResponseModel result = await _accountService.LoginUser(model);
+            model.Password = EncryptionDecryption.GetEncrypt(model.Password);
+            LoginResponseModel result = await _accountService.LoginUser(model);
 
-                if (result != null && result.UserId > 0)
-                {                    
-                    UserTokenModel objTokenData = new UserTokenModel();
-                    objTokenData.EmailId = model.EmailId;
-                    objTokenData.UserId = result.UserId;
-                    objTokenData.UserName = result.FullName;
-
-                    AccessTokenModel objAccessTokenData = new AccessTokenModel();
-                    objAccessTokenData = _jwtAuthenticationService.GenerateToken(objTokenData, _appSettings.JWT_Secret, _appSettings.JWT_Validity_Mins);
-                      
-                    AccessTokenResponseModel AccessToken = new AccessTokenResponseModel();
-                    AccessToken.Token = objAccessTokenData.Token;
-                    AccessToken.ExpiresOnUTC = objAccessTokenData.ExpiresOnUTC;
-
-                    UserProfileModel UserProfile = new UserProfileModel();
-                    UserProfile.UserId = result.UserId;
-                    UserProfile.FullName = result.FullName;
-                    UserProfile.EmailId = result.EmailId;
-
-                    loginBaseReponseModel.AccessToken = AccessToken;
-                    loginBaseReponseModel.UserProfile = UserProfile;
-
-                    response.Success = true;
-                    response.Message = ErrorMessages.LoginSuccess;
-                }
-                else
-                {                    
-                    response.Success = false;
-                    response.Message = ErrorMessages.LoginError;
-                }
-                response.Data = loginBaseReponseModel;
-                return response;
-            }
-            catch (Exception ex)
+            if (result != null && result.UserId > 0)
             {
-                _logger.Information(ex.ToString());
-                response.Success = false;
-                response.Message = ex.Message;
+                UserTokenModel objTokenData = new UserTokenModel();
+                objTokenData.EmailId = model.EmailId;
+                objTokenData.UserId = result.UserId;
+                objTokenData.UserName = result.FullName;
+
+                AccessTokenModel objAccessTokenData = _jwtAuthenticationService.GenerateToken(objTokenData, _appSettings.JWT_Secret, _appSettings.JWT_Validity_Mins);
+
+                AccessTokenResponseModel AccessToken = new AccessTokenResponseModel();
+                AccessToken.Token = objAccessTokenData.Token;
+                AccessToken.ExpiresOnUTC = objAccessTokenData.ExpiresOnUTC;
+
+                UserProfileModel UserProfile = new UserProfileModel();
+                UserProfile.UserId = result.UserId;
+                UserProfile.FullName = result.FullName;
+                UserProfile.EmailId = result.EmailId;
+
+                loginBaseReponseModel.AccessToken = AccessToken;
+                loginBaseReponseModel.UserProfile = UserProfile;
+
+                response.Success = true;
+                response.Message = ErrorMessages.LoginSuccess;
             }
+            else
+            {
+                response.Success = false;
+                response.Message = ErrorMessages.LoginError;
+            }
+            response.Data = loginBaseReponseModel;
             return response;
+
         }
 
         #endregion

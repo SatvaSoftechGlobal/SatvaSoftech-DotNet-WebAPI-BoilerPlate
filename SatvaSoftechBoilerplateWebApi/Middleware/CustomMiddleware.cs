@@ -1,31 +1,36 @@
-﻿using SatvaSoftechBoilerplate.Model.ViewModels.Token;
-using SatvaSoftechBoilerplate.Services.JWTAuthentication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Net.Http.Headers;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using SatvaSoftechBoilerplate.Common.CommonMethods;
+using SatvaSoftechBoilerplate.Common.Helpers;
+using SatvaSoftechBoilerplate.Model.ViewModels.Common;
+using SatvaSoftechBoilerplate.Model.ViewModels.Token;
 using SatvaSoftechBoilerplate.Service.Services.JWTAuthentication;
+using SatvaSoftechBoilerplateWebApi.Logger;
+using System.Text;
 
 namespace SatvaSoftechBoilerplateWebApi.Middleware
 {
-    public class RequestResponseLoggingMiddleware
+    public class CustomMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _hostingEnvironment;
         private readonly IJWTAuthenticationService _jwtAuthenticationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILoggerManager _logger;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="next"></param>
         /// <param name="memoryCache"></param>
-        public RequestResponseLoggingMiddleware(RequestDelegate next, 
-            Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment, IJWTAuthenticationService jwtAuthenticationService)
+        public CustomMiddleware(RequestDelegate next, 
+            Microsoft.AspNetCore.Hosting.IHostingEnvironment hostingEnvironment, IJWTAuthenticationService jwtAuthenticationService, IHttpContextAccessor httpContextAccessor, ILoggerManager logger)
         {
             _next = next;
             _hostingEnvironment = hostingEnvironment;
             _jwtAuthenticationService = jwtAuthenticationService;
+            _httpContextAccessor = httpContextAccessor; 
+            _logger = logger;
         }
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
                 DeleteOldReqResLogFiles();
                 
                 // Check JWT Token validity expiry
-                string jwtToken = context.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+                string jwtToken = context.Request.Headers[HeaderNames.Authorization].ToString().Replace(JwtBearerDefaults.AuthenticationScheme, " ");
                 if (!string.IsNullOrEmpty(jwtToken))
                 {
                     UserTokenModel userTokenModel = _jwtAuthenticationService.GetUserTokenData(jwtToken);
@@ -50,7 +55,7 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
                     {                        
                         if (userTokenModel.TokenValidTo < DateTime.UtcNow.AddMinutes(1))
                         {
-                            context.Response.StatusCode = 401;
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             return;
                         }
                     }
@@ -61,7 +66,7 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
             catch (Exception ex)
             {
                 // Add error logs in folder
-                AddExceptionLogsToFiles(ex, context);
+                AddExceptionLogsToLoggerFile(context, ex);
             }
         }
 
@@ -79,7 +84,14 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
             foreach (string file in files)
             {
                 FileInfo fi = new FileInfo(file);
-                if (fi.LastAccessTime < DateTime.Now.AddDays(-7))
+
+                int days = -7;
+                if (_hostingEnvironment.IsProduction())
+                {
+                    days = -30;
+                }
+
+                if (fi.LastAccessTime < DateTime.Now.AddDays(days))
                 {
                     fi.Delete();
                 }
@@ -87,30 +99,16 @@ namespace SatvaSoftechBoilerplateWebApi.Middleware
         }
 
         /// <summary>
-        /// Add error logs in folder 
+        /// Store exception in logger file
         /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="context"></param>
-        public void AddExceptionLogsToFiles(Exception ex, HttpContext context) 
+        private void AddExceptionLogsToLoggerFile(HttpContext context, Exception exception)
         {
-            var exfilePath = Path.Combine(_hostingEnvironment.ContentRootPath, "ReqResLog", "Exception_" + Path.GetFileName(DateTime.Now.ToString("dd_MM_yyyy") + ".txt"));
-
-            if (!File.Exists(exfilePath))
-            {
-                var myFile = File.Create(exfilePath);
-                myFile.Close();
-            }
-
-            using StreamWriter sw = File.AppendText(exfilePath);
-            sw.WriteLine("");
-            sw.WriteLine("--------------------------------- " + DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt") + " ----------------------------------");
-            sw.WriteLine("Requested URL: " + context.Request.Path.Value);
-            sw.WriteLine("Exception: " + ex.Message);
-            sw.WriteLine("Exception: " + ex.InnerException);
-            if (ex.InnerException != null)
-            {
-                sw.WriteLine("Exception: " + ex.InnerException.InnerException);
-            }
+            ParamValue paramValues = CommonMethods.GetKeyValues(context);
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Environment.NewLine + Constants.RequestParams + paramValues.HeaderValue +
+                      Environment.NewLine + Constants.QueryStringParams + paramValues.QueryStringValue +
+                      Environment.NewLine + Constants.RequestMessage + exception.Message);
+            _logger.Error(sb.ToString());
         }
 
     }

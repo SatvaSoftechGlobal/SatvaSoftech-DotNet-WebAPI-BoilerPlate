@@ -1,12 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 using SatvaSoftechBoilerplate.Model.Config;
-using SatvaSoftechBoilerplate.Model.ViewModels.User;  
 using System.Data.SqlClient;
 using Dapper;
-using System.Linq;
 using SatvaSoftechBoilerplate.Common.Helpers;
 
 namespace SatvaSoftechBoilerplate.Data

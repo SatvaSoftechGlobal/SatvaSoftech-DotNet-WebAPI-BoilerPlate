@@ -18,7 +18,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
 // CORS configuration
 builder.Services.AddCors(options =>
 {
@@ -35,7 +35,6 @@ builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
 
 // Application Setting & SMTP Settings Configuration read from appsettings.json
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-builder.Services.Configure<SMTPSettings>(builder.Configuration.GetSection("SMTPSettings"));
 
 // JWT Token Configuration
 var key = Encoding.UTF8.GetBytes(Convert.ToString(builder.Configuration["AppSettings:JWT_Secret"]));
@@ -112,20 +111,17 @@ var app = builder.Build();
 app.UseRequestLocalization();
 app.UseCors("AllRequests");
 app.UseRouting();
-app.UseMiddleware<RequestResponseLoggingMiddleware>();
+app.UseMiddleware<CustomMiddleware>();
 app.UseAuthorization();
 app.UseAuthentication();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    //app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Satva Softech - Boilerplate Api"));
 }
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Swagger}/{action=Index}/{id?}");
 
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 app.UseStaticFiles();
